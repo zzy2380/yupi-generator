@@ -1,6 +1,8 @@
 ### Custom Template
 
 .idea
+generated
+target
 demo-generator.iml
 yuzi-penerator-basic.iml
 

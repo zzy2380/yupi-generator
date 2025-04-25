@@ -29,6 +29,6 @@ public class JarGenerator {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        doGenerator("E:\\code\\demo-generator\\yuzi-penerator-maker\\generator");
+        doGenerator("E:/code/demo-generator/yuzi-penerator-maker/generator");
     }
 }

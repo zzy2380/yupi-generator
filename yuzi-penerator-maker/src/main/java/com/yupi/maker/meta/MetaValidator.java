@@ -9,7 +9,9 @@ import com.yupi.maker.meta.enums.FileTypeEnum;
 import com.yupi.maker.meta.enums.ModelTypeEnum;
 
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MetaValidator {
@@ -31,6 +33,16 @@ public class MetaValidator {
             return;
         }
         for (Meta.ModelConfig.ModelInfo modelInfo : modelInfoList) {
+            //为group，不校验
+            String groupKey = modelInfo.getGroupKey();
+            if(StrUtil.isNotEmpty(groupKey)){
+                List<Meta.ModelConfig.ModelInfo> subModelInfoList = modelInfo.getModels();
+                String allArgsStr=subModelInfoList.stream()
+                        .map(subModelInfo->String.format("\"--%s\"",subModelInfo.getFieldName()))
+                        .collect(Collectors.joining(", "));
+                modelInfo.setAllArgsStr(allArgsStr);
+                continue;
+            }
             String fieldName = modelInfo.getFieldName();
             if (StrUtil.isBlank(fieldName)) {
                 throw new MetaException("未填写：fieldName");
@@ -108,6 +120,10 @@ public class MetaValidator {
             return;
         }
         for (Meta.FileConfig.FileInfo fileInfo : fileInfoList) {
+            String type = fileInfo.getType();
+            if(FileTypeEnum.GROUP.getValue().equals(type)){
+                continue;
+            }
             //inputPath必填
             String inputPath = fileInfo.getInputPath();
             if (StrUtil.isBlank(inputPath)) {
@@ -119,7 +135,6 @@ public class MetaValidator {
                 fileInfo.setOutputPath(inputPath);
             }
             //type 默认inputPath有文件后缀(比如：.java) 默认为file，否则dir
-            String type = fileInfo.getType();
             if (StrUtil.isBlank(type)) {
                 //无文件后缀
                 if (StrUtil.isBlank(FileUtil.getSuffix(inputPath))) {

@@ -2,6 +2,7 @@
 
 .idea
 generated
+.tmep
 target
 demo-generator.iml
 yuzi-penerator-basic.iml

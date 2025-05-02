@@ -10,7 +10,7 @@ public class TemplateMakerModelConfig {
 
     private List<ModelInfoConfig> models;
 
-    private ModelGroupConfig ModelGroupConfig;
+    private ModelGroupConfig modelGroupConfig;
 
     @NoArgsConstructor
     @Data
@@ -32,11 +32,16 @@ public class TemplateMakerModelConfig {
 
     @Data
     public static class ModelGroupConfig{
+
         private String condition;
 
         private String groupKey;
 
         private String groupName;
+
+        private String type;
+
+        private String description;
     }
 
 

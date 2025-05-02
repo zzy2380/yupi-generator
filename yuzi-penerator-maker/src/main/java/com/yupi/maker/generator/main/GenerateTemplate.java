@@ -22,7 +22,7 @@ public abstract class GenerateTemplate {
 
         //输出根路径
         String projectPath =System.getProperty("user.dir");
-        String outputPath = projectPath+ File.separator+"generated/acm-template-pro-generator";
+        String outputPath = projectPath+ File.separator+"generated/"+File.separator+meta.getName();
         if(!FileUtil.exist(outputPath)){
             FileUtil.mkdir(outputPath);
         }

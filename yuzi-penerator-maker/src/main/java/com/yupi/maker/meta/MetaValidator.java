@@ -9,7 +9,6 @@ import com.yupi.maker.meta.enums.FileTypeEnum;
 import com.yupi.maker.meta.enums.ModelTypeEnum;
 
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,16 +101,16 @@ public class MetaValidator {
             }
             //inputRootPath:.source+sourceRootPath的最后一个层级路径
             String inputRootPath = fileConfig.getInputRootPath();
+            String defaultInputPath = ".source/" +
+                    FileUtil.getLastPathEle(Paths.get(sourceRootPath)).getFileName().toString();
             if (StrUtil.isEmpty(inputRootPath)) {
-                String defaultInputPath = ".source/" +
-                        FileUtil.getLastPathEle(Paths.get(sourceRootPath)).getFileName().toString();
                 fileConfig.setInputRootPath(defaultInputPath);
             }
             //outputRootPath 默认为当前路径下的generated目录
             String outputRootPath = fileConfig.getOutputRootPath();
             String defaultOutputPath = "generated";
             if (StrUtil.isEmpty(outputRootPath)) {
-                fileConfig.setInputRootPath(defaultOutputPath);
+                fileConfig.setOutputRootPath(defaultOutputPath);
             }
         }
         //fileConfig 校验和默认值
@@ -119,11 +118,12 @@ public class MetaValidator {
         if (CollUtil.isEmpty(fileInfoList)) {
             return;
         }
+        //如果有groupKey，就是分组
         for (Meta.FileConfig.FileInfo fileInfo : fileInfoList) {
-            String type = fileInfo.getType();
+            String type= fileInfo.getType();
+            //为group，不校验
             if(FileTypeEnum.GROUP.getValue().equals(type)){
-                continue;
-            }
+                continue;            }
             //inputPath必填
             String inputPath = fileInfo.getInputPath();
             if (StrUtil.isBlank(inputPath)) {

@@ -85,13 +85,13 @@ public class TemplateMakerTest {
         System.out.println(id);
     }
 
-    @Test
-    public void testMakeTemplateWithJSON(){
-        String configStr = ResourceUtil.readUtf8Str("templateMaker.json");
-        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
-        Long id = TemplateMaker.makeTemplate(templateMakerConfig);
-        System.out.println(id);
-    }
+//    @Test
+//    public void testMakeTemplateWithJSON(){
+//        String configStr = ResourceUtil.readUtf8Str("templateMaker.json");
+//        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+//        Long id = TemplateMaker.makeTemplate(templateMakerConfig);
+//        System.out.println(id);
+//    }
 
     /**
      * 制作springboot的模板

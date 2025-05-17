@@ -3,6 +3,7 @@ package com.yupi.maker.generator.main;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.yupi.maker.generator.JarGenerator;
 import com.yupi.maker.generator.ScriptGenerator;
 import com.yupi.maker.generator.file.DynamicFileGenerator;
@@ -19,10 +20,21 @@ public abstract class GenerateTemplate {
     public void doGenerator() throws TemplateException, IOException, InterruptedException {
         Meta meta = MetaManager.getMetaObject();
         System.out.println(meta);
-
         //输出根路径
         String projectPath =System.getProperty("user.dir");
         String outputPath = projectPath+ File.separator+"generated/"+File.separator+meta.getName();
+
+        doGenerator(meta,outputPath);
+    }
+
+
+    /**
+     * 生成
+     * @throws TemplateException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void doGenerator(Meta meta,String outputPath) throws TemplateException, IOException, InterruptedException {
         if(!FileUtil.exist(outputPath)){
             FileUtil.mkdir(outputPath);
         }
@@ -37,11 +49,9 @@ public abstract class GenerateTemplate {
         String shellOutputFilePath= buildScript(outputPath, jarPath);
         //5.生成精简版的程序（产物包）
         buildDist(outputPath,sourceCopyDestPath,jarPath,shellOutputFilePath);
-
-
     }
 
-    protected  void buildDist(String outputPath,String sourceCopyDestPath,String jarPath,String shellOutputFilePath) {
+    protected  String buildDist(String outputPath,String sourceCopyDestPath,String jarPath,String shellOutputFilePath) {
         String distOutputPath = outputPath +"-dist";
         //- 拷贝jar包
         String targetAbsolutePath=distOutputPath+File.separator+"target";
@@ -55,6 +65,7 @@ public abstract class GenerateTemplate {
 
         //- 拷贝原模版文件
         FileUtil.copy(sourceCopyDestPath,distOutputPath,true);
+        return distOutputPath;
     }
 
     protected  String buildScript(String outputPath, String jarPath) {
@@ -73,10 +84,16 @@ public abstract class GenerateTemplate {
         return jarPath;
     }
 
+    /**
+     * 复制原始文件
+     * @param meta
+     * @param outputPath
+     * @throws IOException
+     * @throws TemplateException
+     */
     protected  void generateCode(Meta meta, String outputPath) throws IOException, TemplateException {
         //读取resources目录
-        ClassPathResource classPathResource=new ClassPathResource("");
-        String inputResourcesPath= classPathResource.getAbsolutePath();
+        String inputResourcesPath= "";
 
         //java包的基础路径
         //com.yupi
@@ -101,6 +118,11 @@ public abstract class GenerateTemplate {
         //cli.command.generatorCommand
         inputFilePath=inputResourcesPath+File.separator+ "templates/java/cli/command/GenerateCommand.java.ftl";
         outputFilePath=outputBaseJavaPackagePath+"/cli/command/GenerateCommand.java";
+        DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath, meta);
+
+        //cli.command.JsonGeneratorCommand
+        inputFilePath=inputResourcesPath+File.separator+ "templates/java/cli/command/JsonGenerateCommand.java.ftl";
+        outputFilePath=outputBaseJavaPackagePath+"/cli/command/JsonGenerateCommand.java";
         DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath, meta);
 
         //cli.command.ListCommand
@@ -154,5 +176,14 @@ public abstract class GenerateTemplate {
         String sourceCopyDestPath= outputPath +File.separator+".source";
         FileUtil.copy(sourceRootPath,sourceCopyDestPath,false);
         return sourceCopyDestPath;
+    }
+
+    /**
+     * 制作压缩包
+     */
+    protected String buildZip(String outputPath){
+        String zipPath=outputPath+".zip";
+        ZipUtil.zip(outputPath,zipPath);
+        return zipPath;
     }
 }
